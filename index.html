@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGENSI PROPERTY - Solusi KPR Rumah Impian Cirebon</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'media',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#064E3B',    /* Emerald 900 */
+                            emerald: '#059669',  /* Emerald 600 */
+                            gold: '#D97706',     /* Amber 600 */
+                            goldlight: '#F59E0B',/* Amber 500 */
+                            blue: '#0284C7',     /* Sky Blue Accent */
+                            bluedark: '#1E40AF', /* Royal Blue */
+                            cream: '#F8FAFC',    /* Light slate bg */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let isFirebaseInitialized = false;
+
+        // Global Firebase Configuration
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "demo-api-key",
+                authDomain: "demo-app.firebaseapp.com",
+                projectId: "demo-app",
+                storageBucket: "demo-app.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:demo"
+            };
+
+        // Check if config is a valid non-demo key
+        const isDemoConfig = !firebaseConfig.apiKey || firebaseConfig.apiKey === "demo-api-key";
+
+        let app = null;
+        let auth = null;
+        let db = null;
+
+        try {
+            if (!isDemoConfig) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isFirebaseInitialized = true;
+            }
+        } catch (e) {
+            console.warn("Firebase Init fallback to Local Storage mode:", e.message);
+        }
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'agensi-property-kpr';
+
+        window.db = db;
+        window.auth = auth;
+        window.appId = appId;
+        window.fbSDK = { addDoc, collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc };
+        window.isFirebaseActive = () => isFirebaseInitialized;
+
+        // Authenticate user safely without throwing uncaught errors
+        const initAuth = async () => {
+            if (!isFirebaseInitialized || !auth) return;
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.warn("Firebase Auth operating in Standalone/Local mode:", err.message);
+                isFirebaseInitialized = false;
+            }
+        };
+        initAuth();
+    </script>
+
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.88);
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #B45309 100%);
+        }
+        .green-gradient {
+            background: linear-gradient(135deg, #064E3B 0%, #047857 50%, #0284C7 100%);
+        }
+        .blue-gradient {
+            background: linear-gradient(135deg, #0284C7 0%, #1E40AF 100%);
+        }
+        .ticker-wrapper {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .ticker-content {
+            display: inline-block;
+            animation: ticker 28s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between transition-colors duration-300">
+
+    <a href="https://wa.me/6289676048554?text=Halo%20Agensi%20Property,%20saya%20ingin%20bertanya%20mengenai%20pengajuan%20KPR%20Rumah." 
+       target="_blank" 
+       class="fixed bottom-6 right-6 z-50 bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-all transform hover:scale-110 group border-2 border-amber-300 ring-4 ring-emerald-500/20">
+        <i data-lucide="message-circle" class="w-7 h-7"></i>
+        <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out font-bold text-sm pl-0 group-hover:pl-2">
+            Chat Marketing WA
+        </span>
+    </a>
+
+    <header class="sticky top-0 z-40 w-full glass border-b border-amber-200/50 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- LOGO AREA -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <div class="w-11 h-11 rounded-xl green-gradient flex items-center justify-center shadow-lg border border-amber-400 shrink-0">
+                    <i data-lucide="building-2" class="w-6 h-6 text-amber-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight text-brand-green dark:text-emerald-400">
+                        AGENSI <span class="text-brand-gold">PROPERTY</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">SOLUSI KPR RUMAH SUBSIDI & KOMERSIL</p>
+                </div>
+            </div>
+
+            <!-- DESKTOP NAVIGATION -->
+            <nav class="hidden md:flex items-center space-x-7 font-semibold text-slate-700 dark:text-slate-200 text-sm">
+                <a href="#promo" class="hover:text-brand-blue transition-colors">Promo</a>
+                <a href="#perumahan" class="hover:text-brand-blue transition-colors">Perumahan</a>
+                <a href="#kalkulator" class="hover:text-brand-blue transition-colors">Simulasi KPR</a>
+                <a href="#form-kpr" class="hover:text-brand-blue transition-colors">Form KPR</a>
+                <a href="#galeri" class="hover:text-brand-blue transition-colors">Galeri</a>
+                <a href="#faq" class="hover:text-brand-blue transition-colors">FAQ</a>
+            </nav>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex items-center space-x-3">
+                <a href="#form-kpr" class="hidden sm:inline-flex items-center space-x-2 gold-gradient hover:opacity-95 text-white font-bold px-4 py-2.5 rounded-xl shadow-md transition-all text-xs border border-amber-300">
+                    <i data-lucide="file-signature" class="w-4 h-4"></i>
+                    <span>Ajukan KPR</span>
+                </a>
+                <button onclick="toggleAdminModal()" class="p-2.5 rounded-xl bg-blue-50 dark:bg-slate-800 text-brand-blue dark:text-blue-400 hover:bg-blue-100 transition-colors border border-blue-200 dark:border-slate-700" title="Dashboard Admin">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-brand-green text-amber-300 py-2.5 ticker-wrapper border-y border-amber-500/30 font-bold text-xs tracking-wide">
+        <div class="ticker-content">
+            <span class="inline-flex items-center mx-6"><i data-lucide="flame" class="w-4 h-4 mr-2 text-amber-400"></i> PROMO BULAN INI: MILIKI RUMAH IMPAN TANPA DP!</span>
+            <span class="inline-flex items-center mx-6"><i data-lucide="check-circle-2" class="w-4 h-4 mr-2 text-blue-400"></i> BOOKING UNIT CUKUP RP 100.000</span>
+            <span class="inline-flex items-center mx-6"><i data-lucide="gift" class="w-4 h-4 mr-2 text-amber-400"></i> GRATIS BIAYA AKAD HINGGA RP 2.400.000</span>
+            <span class="inline-flex items-center mx-6"><i data-lucide="shield-check" class="w-4 h-4 mr-2 text-emerald-400"></i> PROSES CEPAT, AMAN & TERPERCAYA DENGAN PENDAMPINGAN KPR FULL</span>
+            <!-- Repeat Loop -->
+            <span class="inline-flex items-center mx-6"><i data-lucide="flame" class="w-4 h-4 mr-2 text-amber-400"></i> PROMO BULAN INI: MILIKI RUMAH IMPAN TANPA DP!</span>
+            <span class="inline-flex items-center mx-6"><i data-lucide="check-circle-2" class="w-4 h-4 mr-2 text-blue-400"></i> BOOKING UNIT CUKUP RP 100.000</span>
+            <span class="inline-flex items-center mx-6"><i data-lucide="gift" class="w-4 h-4 mr-2 text-amber-400"></i> GRATIS BIAYA AKAD HINGGA RP 2.400.000</span>
+        </div>
+    </div>
+
+    <main class="flex-grow">
+
+        <section class="relative min-h-[600px] flex items-center justify-center bg-slate-900 py-20 px-4 overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80" alt="Perumahan Agensi Property" class="w-full h-full object-cover object-center opacity-30 transform scale-105">
+                <div class="absolute inset-0 bg-gradient-to-r from-brand-green/95 via-slate-900/90 to-brand-bluedark/80"></div>
+            </div>
+
+            <div class="relative z-10 max-w-5xl mx-auto text-center text-white space-y-8">
+                <div class="inline-flex items-center space-x-2 bg-amber-500/20 border border-amber-400/50 text-amber-300 px-4 py-1.5 rounded-full text-xs font-bold backdrop-blur-md">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+                    <span>Agensi KPR Terpercaya Resmi Cirebon</span>
+                </div>
+                
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+                    🏡 Miliki Rumah Impian <br><span class="text-amber-400">Tanpa DP!</span>
+                </h1>
+
+                <p class="text-base sm:text-xl text-slate-200 max-w-2xl mx-auto font-normal leading-relaxed">
+                    Ajukan KPR hanya dalam beberapa menit. Isi formulir, upload berkas lengkap, dan kami bantu proses hingga <strong>ACC Bank</strong>.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <a href="#form-kpr" class="w-full sm:w-auto gold-gradient hover:opacity-95 text-white font-extrabold px-8 py-4 rounded-xl shadow-xl transition-all flex items-center justify-center space-x-3 text-base border border-amber-300 transform hover:-translate-y-0.5">
+                        <i data-lucide="edit-3" class="w-5 h-5"></i>
+                        <span>Ajukan Sekarang</span>
+                    </a>
+                    <a href="https://wa.me/6289676048554?text=Halo%20Marketing%20Agensi%20Property,%20saya%20mau%20konsultasi%20KPR" target="_blank" class="w-full sm:w-auto bg-blue-600/90 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-xl border border-blue-400/50 shadow-lg backdrop-blur-md transition-all flex items-center justify-center space-x-3 text-base">
+                        <i data-lucide="phone-call" class="w-5 h-5 text-amber-300"></i>
+                        <span>Hubungi Marketing</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="promo" class="py-16 px-4 max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-brand-green dark:text-emerald-400">PROMO SPESIAL KPR</h2>
+                <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">Keuntungan khusus pengajuan KPR bulan ini bersama Agensi Property</p>
+                <div class="w-20 h-1 bg-brand-gold mx-auto mt-3 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Promo 1 -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 hover:border-amber-400 transition-all flex items-start space-x-4">
+                    <div class="p-3 bg-emerald-100 dark:bg-emerald-950/60 rounded-xl text-brand-green dark:text-emerald-400 shrink-0">
+                        <i data-lucide="badge-percent" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">✅ DP Rp0,-</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Langsung proses tanpa beban uang muka yang tinggi.</p>
+                    </div>
+                </div>
+
+                <!-- Promo 2 -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 hover:border-amber-400 transition-all flex items-start space-x-4">
+                    <div class="p-3 bg-amber-100 dark:bg-amber-950/60 rounded-xl text-brand-gold shrink-0">
+                        <i data-lucide="ticket" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">✅ Booking Unit Rp100.000</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Cukup booking terjangkau untuk mengunci unit dan kavling pilihan.</p>
+                    </div>
+                </div>
+
+                <!-- Promo 3 -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 hover:border-amber-400 transition-all flex items-start space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-blue-950/60 rounded-xl text-brand-blue shrink-0">
+                        <i data-lucide="gift" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">✅ Gratis Biaya Akad Hingga Rp2.400.000</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Free subsidi biaya notaris & legalitas akad KPR.</p>
+                    </div>
+                </div>
+
+                <!-- Promo 4 -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 hover:border-amber-400 transition-all flex items-start space-x-4">
+                    <div class="p-3 bg-emerald-100 dark:bg-emerald-950/60 rounded-xl text-brand-green dark:text-emerald-400 shrink-0">
+                        <i data-lucide="user-check" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">✅ Gratis Pendampingan KPR</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Tim profesional membantu cek BI Checking & kelengkapan berkas.</p>
+                    </div>
+                </div>
+
+                <!-- Promo 5 -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 hover:border-amber-400 transition-all flex items-start space-x-4">
+                    <div class="p-3 bg-amber-100 dark:bg-amber-950/60 rounded-xl text-brand-gold shrink-0">
+                        <i data-lucide="zap" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">✅ Proses Cepat</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Penilaian berkas kilat dan verifikasi langsung ke perbankan mitra.</p>
+                    </div>
+                </div>
+
+                <!-- Promo 6 -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 hover:border-amber-400 transition-all flex items-start space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-blue-950/60 rounded-xl text-brand-blue shrink-0">
+                        <i data-lucide="shield-check" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">✅ Aman dan Terpercaya</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Pengembang resmi & sertifikat SHM terjamin.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="perumahan" class="py-16 bg-emerald-900/5 dark:bg-slate-900/60 border-y border-emerald-100 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-brand-green dark:text-emerald-400">PILHAN PERUMAHAN UNGGULAN</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">Lokasi strategis di Cirebon & sekitarnya dengan sertifikat SHM</p>
+                    <div class="w-20 h-1 bg-brand-gold mx-auto mt-3 rounded-full"></div>
+                </div>
+
+                <!-- Grid Perumahan -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" id="housingGrid">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+
+                <div id="kalkulator" class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl border border-emerald-200 dark:border-slate-800">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 text-brand-blue rounded-xl">
+                            <i data-lucide="calculator" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-brand-green dark:text-emerald-400">Simulasi Angsuran KPR</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Hitung estimasi cicilan per bulan sesuai harga hunian pilihan Anda</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Harga Rumah (Rp)</label>
+                            <input type="number" id="calcPrice" value="174000000" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Tenor (Tahun)</label>
+                            <select id="calcTenure" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-semibold">
+                                <option value="10">10 Tahun</option>
+                                <option value="15">15 Tahun</option>
+                                <option value="20" selected>20 Tahun</option>
+                                <option value="25">25 Tahun</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Suku Bunga / Thn (%)</label>
+                            <input type="number" id="calcInterest" value="5" step="0.1" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-semibold">
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-emerald-50 dark:bg-slate-800 rounded-2xl border border-emerald-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Estimasi Cicilan Per Bulan:</span>
+                            <div class="text-2xl font-black text-brand-green dark:text-emerald-400" id="calcResult">Rp 1.073.000 / bln</div>
+                        </div>
+                        <button type="button" onclick="calculateKpr()" class="w-full sm:w-auto bg-brand-green text-amber-300 hover:bg-emerald-800 font-bold px-6 py-3 rounded-xl transition-all text-xs">
+                            Hitung Ulang
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="form-kpr" class="py-16 px-4 max-w-4xl mx-auto">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-amber-200/70 dark:border-slate-800 overflow-hidden">
+                <div class="green-gradient p-8 text-white text-center relative">
+                    <div class="absolute top-4 right-4 text-amber-300 opacity-20">
+                        <i data-lucide="file-check-2" class="w-24 h-24"></i>
+                    </div>
+                    <h2 class="text-3xl font-black tracking-tight">FORMULIR PENGAJUAN KPR</h2>
+                    <p class="text-emerald-100 text-xs sm:text-sm mt-2 max-w-lg mx-auto">Isi data lengkap di bawah ini untuk memulai pengajuan KPR Rumah Impian Anda.</p>
+                </div>
+
+                <form id="kprForm" onsubmit="handleFormSubmit(event)" class="p-6 sm:p-10 space-y-10">
+
+                    <!-- SEKSI 1: PILIH PERUMAHAN -->
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 border-b pb-2 border-slate-200 dark:border-slate-800">
+                            <span class="w-7 h-7 rounded-full gold-gradient text-white flex items-center justify-center font-bold text-xs">1</span>
+                            <h3 class="text-lg font-bold text-brand-green dark:text-emerald-400">Pilih Unit Perumahan & Lokasi</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Perumahan <span class="text-red-500">*</span></label>
+                                <select id="formPerumahan" required class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                                    <option value="">-- Pilih Perumahan --</option>
+                                    <option value="Rumah Baginda Pabedilan">Rumah Baginda Pabedilan</option>
+                                    <option value="Alana Village Pabedilan">Alana Village Pabedilan</option>
+                                    <option value="Grand Metro Ciledug">Grand Metro Ciledug</option>
+                                    <option value="Istana Banjar Cirebon">Istana Banjar Cirebon</option>
+                                    <option value="Jatinpesona">Jatinpesona</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Pilihan Lokasi <span class="text-red-500">*</span></label>
+                                <select id="formLokasi" required class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                                    <option value="">-- Pilih Lokasi --</option>
+                                    <option value="Cirebon Kota">Cirebon Kota</option>
+                                    <option value="Cirebon Timur">Cirebon Timur</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Blok <span class="text-red-500">*</span></label>
+                                <input type="text" id="formBlok" required placeholder="Contoh: Blok A" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nomor Unit <span class="text-red-500">*</span></label>
+                                <input type="text" id="formUnit" required placeholder="Contoh: No. 08" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEKSI 2: DATA DIRI PEMOHON -->
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 border-b pb-2 border-slate-200 dark:border-slate-800">
+                            <span class="w-7 h-7 rounded-full gold-gradient text-white flex items-center justify-center font-bold text-xs">2</span>
+                            <h3 class="text-lg font-bold text-brand-green dark:text-emerald-400">Data Diri Pemohon</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Lengkap (sesuai KTP) <span class="text-red-500">*</span></label>
+                                <input type="text" id="formNama" required placeholder="Nama Lengkap" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">NIK KTP <span class="text-red-500">*</span></label>
+                                <input type="number" id="formNik" required placeholder="16 digit NIK" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Status Pernikahan <span class="text-red-500">*</span></label>
+                                <select id="formStatusNikah" required class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="Belum Menikah">Belum Menikah</option>
+                                    <option value="Menikah">Menikah</option>
+                                    <option value="Cerai">Cerai</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tempat Lahir <span class="text-red-500">*</span></label>
+                                <input type="text" id="formTempatLahir" required placeholder="Kota Lahir" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
+                                <input type="date" id="formTglLahir" required class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nomor HP <span class="text-red-500">*</span></label>
+                                <input type="tel" id="formHp" required placeholder="08xxxxxxxxxx" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                                <input type="tel" id="formWa" required placeholder="08xxxxxxxxxx" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Email <span class="text-red-500">*</span></label>
+                                <input type="email" id="formEmail" required placeholder="email@domain.com" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Alamat Lengkap <span class="text-red-500">*</span></label>
+                                <textarea id="formAlamat" rows="2" required placeholder="Jalan, RT/RW, No. Rumah" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Provinsi <span class="text-red-500">*</span></label>
+                                <input type="text" id="formProvinsi" required value="Jawa Barat" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kabupaten/Kota <span class="text-red-500">*</span></label>
+                                <input type="text" id="formKabupaten" required value="Cirebon" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                                <input type="text" id="formKecamatan" required placeholder="Nama Kecamatan" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kelurahan <span class="text-red-500">*</span></label>
+                                <input type="text" id="formKelurahan" required placeholder="Nama Kelurahan" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kode Pos <span class="text-red-500">*</span></label>
+                                <input type="text" id="formKodePos" required placeholder="451xx" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEKSI 3: PEKERJAAN -->
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 border-b pb-2 border-slate-200 dark:border-slate-800">
+                            <span class="w-7 h-7 rounded-full gold-gradient text-white flex items-center justify-center font-bold text-xs">3</span>
+                            <h3 class="text-lg font-bold text-brand-green dark:text-emerald-400">Data Pekerjaan & Penghasilan</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Status Pekerjaan <span class="text-red-500">*</span></label>
+                                <select id="formStatusKerja" required class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                                    <option value="">-- Pilih Status Pekerjaan --</option>
+                                    <option value="Karyawan">Karyawan</option>
+                                    <option value="Wiraswasta">Wiraswasta</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Perusahaan / Usaha <span class="text-red-500">*</span></label>
+                                <input type="text" id="formNamaPerusahaan" required placeholder="PT / CV / Perusahaan / Toko" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Alamat Perusahaan <span class="text-red-500">*</span></label>
+                                <input type="text" id="formAlamatPerusahaan" required placeholder="Alamat lengkap tempat kerja" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Lama Bekerja / Usaha <span class="text-red-500">*</span></label>
+                                <input type="text" id="formLamaKerja" required placeholder="Contoh: 2 Tahun" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Jabatan <span class="text-red-500">*</span></label>
+                                <input type="text" id="formJabatan" required placeholder="Contoh: Staff / Manager" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Penghasilan Per Bulan (Rp) <span class="text-red-500">*</span></label>
+                                <input type="number" id="formGaji" required placeholder="Gaji Pokok / Omset" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Penghasilan Tambahan (Rp)</label>
+                                <input type="number" id="formPenghasilanTambahan" placeholder="Opsional" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEKSI 4: UPLOAD BERKAS -->
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 border-b pb-2 border-slate-200 dark:border-slate-800">
+                            <span class="w-7 h-7 rounded-full gold-gradient text-white flex items-center justify-center font-bold text-xs">4</span>
+                            <h3 class="text-lg font-bold text-brand-green dark:text-emerald-400">Upload Berkas Persyaratan (Max 10MB/File)</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">1. KTP <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileKtp" required accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">2. Kartu Keluarga (KK) <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileKk" required accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">3. NPWP <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileNpwp" required accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">4. Slip Gaji <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileSlip" required accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">5. Rekening Koran (3 Bln) <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileRekening" required accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">6. SK Kerja <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileSkKerja" required accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">7. Buku Nikah (Jika Menikah)</label>
+                                <input type="file" id="fileNikah" accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">8. Foto Selfie <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileSelfie" required accept=".jpg,.jpeg,.png" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+
+                            <div class="sm:col-span-2 p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">9. Dokumen Pendukung Lainnya</label>
+                                <input type="file" id="filePendukung" accept=".jpg,.jpeg,.png,.pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-brand-green hover:file:bg-emerald-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEKSI 5: PERSETUJUAN -->
+                    <div class="p-4 bg-amber-50 dark:bg-slate-800 rounded-2xl border border-amber-200 dark:border-slate-700 space-y-3">
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <input type="checkbox" id="checkPernyataan1" required class="mt-1 w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                            <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">Saya menyatakan seluruh data dan berkas yang diisi adalah benar, asli, serta sah.</span>
+                        </label>
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <input type="checkbox" id="checkPernyataan2" required class="mt-1 w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                            <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">Saya mengizinkan seluruh data dikirim kepada pihak Bank untuk proses KPR.</span>
+                        </label>
+                    </div>
+
+                    <!-- SUBMIT BUTTON -->
+                    <div>
+                        <button type="submit" id="btnSubmit" class="w-full gold-gradient hover:opacity-95 text-white font-black py-4 rounded-xl shadow-xl transition-all text-base flex items-center justify-center space-x-2 border border-amber-300">
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                            <span>AJUKAN SEKARANG</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <section id="galeri" class="py-16 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-brand-green dark:text-emerald-400">GALERI PERUMAHAN</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">Dokumentasi serah terima unit & kawasan perumahan</p>
+                    <div class="w-20 h-1 bg-brand-gold mx-auto mt-3 rounded-full"></div>
+                </div>
+
+                <!-- Foto Galeri Dynamic -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16" id="galleryContainer">
+                    <!-- Dynamic rendering -->
+                </div>
+
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-extrabold text-brand-green dark:text-emerald-400">TESTIMONI PEMBELI</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">Pengalaman bahagia konsumen yang berhasil ACC KPR</p>
+                    <div class="w-20 h-1 bg-brand-gold mx-auto mt-3 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="testimonialContainer">
+                    <!-- Dynamic Testimonials -->
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="py-16 px-4 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                
+                <!-- FAQ Accordion -->
+                <div>
+                    <h2 class="text-2xl font-extrabold text-brand-green dark:text-emerald-400 mb-2">PERTANYAAN SERING DIAJUKAN (FAQ)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Informasi praktis pengajuan KPR di Agensi Property</p>
+
+                    <div class="space-y-4">
+                        <details class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <summary class="font-bold text-slate-800 dark:text-slate-200 text-sm cursor-pointer">Berapa lama proses persetujuan KPR hingga ACC?</summary>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Rata-rata analisa berkas hingga penerbitan Surat Persetujuan Kredit (SP3K) berkisar 7 hingga 14 hari kerja setelah berkas lengkap.</p>
+                        </details>
+
+                        <details class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <summary class="font-bold text-slate-800 dark:text-slate-200 text-sm cursor-pointer">Apakah promo DP Rp0,- benar-benar tanpa biaya DP?</summary>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Ya, seluruh unit perumahan pada daftar pilihan kami mendapatkan subsidi promo DP Rp0,- langsung dari pengembang.</p>
+                        </details>
+
+                        <details class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <summary class="font-bold text-slate-800 dark:text-slate-200 text-sm cursor-pointer">Bagaimana jika berkas Karyawan/Wiraswasta saya butuh pendampingan?</summary>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Tim konsultan KPR Agensi Property akan mendampingi perapihan laporan keuangan/slip gaji hingga lolos analisa Bank.</p>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- MAPS & KONTAK -->
+                <div>
+                    <h2 class="text-2xl font-extrabold text-brand-green dark:text-emerald-400 mb-2">LOKASI & KANTOR PEMASARAN</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Kunjungi kantor pemasaran atau jadwalkan survei lokasi</p>
+
+                    <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md h-64 mb-4">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126743.58585489029!2d108.50284755000002!3d-6.7372462!2m3!1f0!0f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6ee2649e3e3b33%3A0xb3e11f7c00e6206d!2sCirebon%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+
+                    <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+                        <p class="flex items-center text-slate-700 dark:text-slate-300">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-brand-gold"></i>
+                            <strong>Alamat Utama:</strong> Jl. Raya Cirebon, Wilayah Pabedilan & Ciledug, Jawa Barat.
+                        </p>
+                        <p class="flex items-center text-slate-700 dark:text-slate-300">
+                            <i data-lucide="phone" class="w-4 h-4 mr-2 text-brand-gold"></i>
+                            <strong>WhatsApp Resmi:</strong> 089676048554
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <div id="adminModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-6xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            
+            <!-- ADMIN HEADER -->
+            <div class="green-gradient text-white p-5 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-amber-400 text-brand-green rounded-xl font-bold">
+                        <i data-lucide="shield" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h2 class="text-lg font-extrabold">ADMIN DASHBOARD - AGENSI PROPERTY</h2>
+                            <span id="firebaseStatusBadge" class="bg-amber-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full">Mode Standalone/Lokal</span>
+                        </div>
+                        <p class="text-xs text-emerald-100">Kelola Pengajuan KPR, Perumahan, Galeri & Testimoni</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminModal()" class="text-white hover:bg-emerald-800 p-2 rounded-lg">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- ADMIN TABS -->
+            <div class="bg-slate-100 dark:bg-slate-800 px-6 border-b border-slate-200 dark:border-slate-700 flex space-x-4 text-xs font-bold overflow-x-auto">
+                <button onclick="switchAdminTab('submissions')" id="tabSubmissions" class="py-3 border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 flex items-center space-x-1">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>Pengajuan KPR</span>
+                </button>
+                <button onclick="switchAdminTab('housing')" id="tabHousing" class="py-3 border-b-2 border-transparent text-slate-500 dark:text-slate-400 flex items-center space-x-1">
+                    <i data-lucide="home" class="w-4 h-4"></i>
+                    <span>Kelola Perumahan</span>
+                </button>
+                <button onclick="switchAdminTab('gallery')" id="tabGallery" class="py-3 border-b-2 border-transparent text-slate-500 dark:text-slate-400 flex items-center space-x-1">
+                    <i data-lucide="image" class="w-4 h-4"></i>
+                    <span>Kelola Galeri</span>
+                </button>
+                <button onclick="switchAdminTab('testimonials')" id="tabTestimonials" class="py-3 border-b-2 border-transparent text-slate-500 dark:text-slate-400 flex items-center space-x-1">
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                    <span>Kelola Testimoni</span>
+                </button>
+            </div>
+
+            <!-- ADMIN BODY CONTAINER -->
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+
+                <!-- TAB 1: SUBMISSIONS DATA -->
+                <div id="adminTabSubmissions" class="space-y-6">
+                    <!-- COUNTER CARDS -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-slate-500 uppercase">Total Pengajuan</span>
+                            <div class="text-2xl font-black text-brand-green dark:text-emerald-400 mt-1" id="statTotal">0</div>
+                        </div>
+                        <div class="bg-amber-50 dark:bg-slate-800 p-4 rounded-2xl border border-amber-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase">Diproses</span>
+                            <div class="text-2xl font-black text-brand-gold mt-1" id="statProcess">0</div>
+                        </div>
+                        <div class="bg-emerald-50 dark:bg-slate-800 p-4 rounded-2xl border border-emerald-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">Jumlah ACC</span>
+                            <div class="text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-1" id="statAcc">0</div>
+                        </div>
+                        <div class="bg-red-50 dark:bg-slate-800 p-4 rounded-2xl border border-red-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-red-700 dark:text-red-400 uppercase">Ditolak</span>
+                            <div class="text-2xl font-black text-red-600 mt-1" id="statReject">0</div>
+                        </div>
+                    </div>
+
+                    <!-- SEARCH & FILTER TOOLBAR -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <div class="relative md:col-span-1">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                            <input type="text" id="adminSearch" onkeyup="filterAdminData()" placeholder="Cari nama pemohon..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                        </div>
+                        <select id="adminFilterStatus" onchange="filterAdminData()" class="text-xs p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <option value="">Semua Status</option>
+                            <option value="Pengajuan Baru">Pengajuan Baru</option>
+                            <option value="Diproses">Diproses</option>
+                            <option value="ACC">ACC</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                        <select id="adminFilterPerumahan" onchange="filterAdminData()" class="text-xs p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <option value="">Semua Perumahan</option>
+                            <option value="Rumah Baginda Pabedilan">Rumah Baginda Pabedilan</option>
+                            <option value="Alana Village Pabedilan">Alana Village Pabedilan</option>
+                            <option value="Grand Metro Ciledug">Grand Metro Ciledug</option>
+                            <option value="Istana Banjar Cirebon">Istana Banjar Cirebon</option>
+                            <option value="Jatinpesona">Jatinpesona</option>
+                        </select>
+                        <button onclick="exportToExcel()" class="bg-emerald-700 text-white hover:bg-emerald-800 text-xs font-bold px-4 py-2 rounded-xl flex items-center justify-center space-x-1">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Export Excel (CSV)</span>
+                        </button>
+                    </div>
+
+                    <!-- TABLE DATA -->
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                    <th class="p-3">Nama Pemohon</th>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Perumahan</th>
+                                    <th class="p-3">Lokasi</th>
+                                    <th class="p-3">Blok / Unit</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 font-medium">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: KELOLA PERUMAHAN -->
+                <div id="adminTabHousing" class="hidden space-y-6">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+                        <h3 class="text-sm font-bold text-brand-green dark:text-emerald-400">Tambah Unit Perumahan Baru</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" id="newHouseTitle" placeholder="Nama Perumahan" class="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <input type="text" id="newHouseImg" placeholder="URL Gambar (e.g. https://...)" class="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <input type="text" id="newHouseAddress" placeholder="Alamat Perumahan" class="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <input type="text" id="newHousePrice" placeholder="Harga (e.g. Rp174.000.000)" class="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <input type="text" id="newHouseCicilan" placeholder="Cicilan (e.g. Rp1.073.000/bulan)" class="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                            <input type="text" id="newHousePromo" placeholder="Promo (e.g. DP Rp0,- | Booking 100rb)" class="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                        </div>
+                        <button onclick="addHousingItem()" class="gold-gradient text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow">
+                            Tambah Perumahan
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="adminHousingList">
+                        <!-- Dynamic housing list cards -->
+                    </div>
+                </div>
+
+                <!-- TAB 3: KELOLA GALERI -->
+                <div id="adminTabGallery" class="hidden space-y-6">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex gap-3">
+                        <input type="text" id="newGalleryImg" placeholder="URL Foto Galeri (e.g. https://i.imgur.com/...)" class="flex-grow p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                        <button onclick="addGalleryImage()" class="gold-gradient text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow">
+                            Tambah Foto
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="adminGalleryList">
+                        <!-- Dynamic gallery management -->
+                    </div>
+                </div>
+
+                <!-- TAB 4: KELOLA TESTIMONI -->
+                <div id="adminTabTestimonials" class="hidden space-y-6">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <input type="text" id="newTestiName" placeholder="Nama Konsumen" class="w-full p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none">
+                        <textarea id="newTestiQuote" rows="2" placeholder="Komentar / Testimoni..." class="w-full p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 outline-none"></textarea>
+                        <button onclick="addTestimonialItem()" class="gold-gradient text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow">
+                            Tambah Testimoni
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="adminTestiList">
+                        <!-- Dynamic testimonails list -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
+                <h3 class="text-base font-bold flex items-center space-x-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-amber-400"></i>
+                    <span>Detail Berkas & Data Pemohon KPR</span>
+                </h3>
+                <button onclick="toggleDetailModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 text-xs text-slate-700 dark:text-slate-300" id="detailContent">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 glass p-4 rounded-2xl shadow-2xl border border-amber-300 flex items-center space-x-3 text-xs font-bold max-w-sm">
+        <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600 shrink-0" id="toastIcon"></i>
+        <span id="toastMsg" class="text-slate-800 dark:text-slate-100">Notifikasi</span>
+    </div>
+
+    <footer class="bg-brand-green text-white border-t-4 border-brand-gold py-12 px-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-white">
+                        <i data-lucide="building-2" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl font-black">AGENSI PROPERTY</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Mitra Resmi Pengajuan KPR Rumah Subsidi & Komersil Tanpa DP Wilayah Cirebon & Sekitarnya. Kami siap mendampingi Anda hingga serah terima kunci.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-amber-400 font-bold mb-3 text-sm uppercase">Kontak Resmi</h4>
+                <p class="text-xs text-slate-300 flex items-center mb-2">
+                    <i data-lucide="phone" class="w-4 h-4 mr-2 text-amber-400"></i> WhatsApp: 089676048554
+                </p>
+                <p class="text-xs text-slate-300 flex items-center">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-amber-400"></i> Kantor Pemasaran Agensi Property Cirebon
+                </p>
+            </div>
+            <div>
+                <h4 class="text-amber-400 font-bold mb-3 text-sm uppercase">Jam Operasional</h4>
+                <p class="text-xs text-slate-300 mb-1">Senin - Sabtu: 08:00 - 18:00 WIB</p>
+                <p class="text-xs text-slate-300">Pengajuan Online KPR: 24 Jam Nonstop</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-emerald-800 mt-8 pt-6 text-center text-xs text-slate-400">
+            Copyright © 2026 AGENSI PROPERTY. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Default Housing Data Items
+        let housingData = [
+            {
+                id: "h1",
+                title: "Rumah Baginda Pabedilan",
+                image: "https://i.imgur.com/ap8zH21.jpeg",
+                address: "Jl. Pabedilan Kulon, sebelah timur PT. Gold Emperor 2, Cirebon, Jawa Barat.",
+                status: "SHM",
+                price: "Rp174.000.000",
+                cicilan: "Rp1.073.000/bulan",
+                promo: "DP Rp0,- | Booking Unit Rp100.000"
+            },
+            {
+                id: "h2",
+                title: "Alana Village Pabedilan",
+                image: "https://i.imgur.com/cs5aMZ7.jpeg",
+                address: "Jl. Tenjomaya, sebelah barat PT. Taekwang, Ciledug, Cirebon, Jawa Barat.",
+                status: "SHM",
+                price: "Rp174.000.000",
+                cicilan: "Rp1.073.000/bulan",
+                promo: "DP Rp0,- | Booking Unit Rp100.000"
+            },
+            {
+                id: "h3",
+                title: "Grand Metro Ciledug",
+                image: "https://i.imgur.com/DVJHX1G.jpeg",
+                address: "Jl. Raya Tenjomaya, Ciledug, Cirebon. Sebelah selatan PT. Chinli.",
+                status: "SHM",
+                price: "Rp174.000.000",
+                cicilan: "Rp1.073.000/bulan",
+                promo: "DP Rp0,- | Booking Unit Rp500.000"
+            },
+            {
+                id: "h4",
+                title: "Istana Banjar Cirebon",
+                image: "",
+                address: "Kawasan Strategis Cirebon",
+                status: "SHM",
+                price: "Rp174.000.000",
+                cicilan: "Rp1.073.000/bulan",
+                promo: "DP Rp0,- | Booking Unit Rp100.000",
+                noImage: true
+            },
+            {
+                id: "h5",
+                title: "Jatinpesona",
+                image: "",
+                address: "Kawasan Asri Cirebon",
+                status: "SHM",
+                price: "Rp174.000.000",
+                cicilan: "Rp1.073.000/bulan",
+                promo: "DP Rp0,- | Booking Unit Rp100.000",
+                noImage: true
+            }
+        ];
+
+        let galleryImages = [
+            "https://i.imgur.com/En8QSht.jpeg",
+            "https://i.imgur.com/2rNxRxj.jpeg",
+            "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80",
+            "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=400&q=80"
+        ];
+
+        let testimonials = [
+            { name: "Bp. Budi - Pabedilan", quote: "Proses cepat dan dibantu sampai ACC." },
+            { name: "Ibu Rina - Ciledug", quote: "Booking hanya Rp100.000." },
+            { name: "Mas Aris - Cirebon", quote: "DP Rp0,- sangat membantu." }
+        ];
+
+        // Initialize local submissions storage
+        let submissionsData = JSON.parse(localStorage.getItem("agensi_kpr_submissions") || "[]");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            renderHousingGrid();
+            renderGallery();
+            renderTestimonials();
+            listenSubmissions();
+            updateBackendBadge();
+        });
+
+        function updateBackendBadge() {
+            const badge = document.getElementById("firebaseStatusBadge");
+            if (!badge) return;
+            if (window.isFirebaseActive && window.isFirebaseActive()) {
+                badge.innerText = "Firebase Live Mode";
+                badge.className = "bg-emerald-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full";
+            } else {
+                badge.innerText = "Mode Lokal / Demo";
+                badge.className = "bg-amber-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full";
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3500);
+        }
+
+        // Render Housing Cards
+        function renderHousingGrid() {
+            const container = document.getElementById('housingGrid');
+            container.innerHTML = '';
+
+            housingData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 flex flex-col group hover:border-amber-400 transition-all";
+                
+                const imageHeaderHtml = item.noImage || !item.image ? `
+                    <div class="relative h-56 green-gradient p-6 flex flex-col items-center justify-center text-center overflow-hidden border-b border-amber-500/30">
+                        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-400/10 rounded-full blur-xl"></div>
+                        <i data-lucide="building-2" class="w-12 h-12 text-amber-300 mb-2"></i>
+                        <h4 class="text-xl font-black text-white uppercase tracking-wider leading-tight mb-2">${item.title}</h4>
+                        <a href="https://wa.me/6289676048554?text=Halo%20Admin%20Agensi%20Property,%20saya%20minta%20keterangan/foto%20gambar%20perumahan%20${encodeURIComponent(item.title)}" target="_blank" class="inline-flex items-center space-x-1.5 bg-emerald-700 hover:bg-emerald-800 text-amber-300 text-xs font-bold px-4 py-2 rounded-full border border-amber-400/50 shadow transition-all transform hover:scale-105">
+                            <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
+                            <span>Gambar chat admin</span>
+                        </a>
+                        <span class="absolute top-3 left-3 bg-brand-gold text-white font-bold px-3 py-1 rounded-full text-[10px] shadow">${item.status}</span>
+                        <span class="absolute top-3 right-3 bg-blue-600 text-white font-bold px-3 py-1 rounded-full text-[10px] shadow">Subsidi</span>
+                    </div>
+                ` : `
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80'">
+                        <span class="absolute top-3 left-3 bg-brand-gold text-white font-bold px-3 py-1 rounded-full text-[10px] shadow">${item.status}</span>
+                        <span class="absolute top-3 right-3 bg-blue-600 text-white font-bold px-3 py-1 rounded-full text-[10px] shadow">Subsidi</span>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    ${imageHeaderHtml}
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-black text-brand-green dark:text-emerald-400">${item.title}</h3>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs flex items-start mt-1">
+                                <i data-lucide="map-pin" class="w-4 h-4 mr-1 text-brand-gold shrink-0 mt-0.5"></i>
+                                <span>${item.address}</span>
+                            </p>
+                            <div class="mt-3 p-2 bg-emerald-50 dark:bg-slate-800 rounded-lg text-emerald-800 dark:text-emerald-300 text-[11px] font-bold">
+                                🎁 ${item.promo || 'DP Rp0,- | Booking 100rb'}
+                            </div>
+                        </div>
+                        <div class="mt-4 border-t border-slate-100 dark:border-slate-800 pt-3 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-slate-400 block uppercase font-semibold">Harga / Cicilan</span>
+                                <span class="text-sm font-bold text-slate-800 dark:text-slate-100">${item.price}</span>
+                                <span class="text-[11px] block font-semibold text-emerald-600 dark:text-emerald-400">${item.cicilan}</span>
+                            </div>
+                            <a href="#form-kpr" onclick="preselectHousing('${item.title}')" class="gold-gradient text-white font-bold px-4 py-2 rounded-xl text-xs shadow hover:opacity-90">Pilih Unit</a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Also update admin housing list
+            renderAdminHousingList();
+            lucide.createIcons();
+        }
+
+        function preselectHousing(title) {
+            const select = document.getElementById('formPerumahan');
+            select.value = title;
+            showToast(`Perumahan "${title}" terpilih pada formulir!`);
+        }
+
+        // KPR Calculator
+        function calculateKpr() {
+            const price = parseFloat(document.getElementById('calcPrice').value) || 0;
+            const years = parseFloat(document.getElementById('calcTenure').value) || 20;
+            const rate = (parseFloat(document.getElementById('calcInterest').value) || 5) / 100 / 12;
+            const months = years * 12;
+
+            if (price <= 0) return;
+            const monthly = (price * rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1);
+            document.getElementById('calcResult').innerText = "Rp " + Math.round(monthly).toLocaleString('id-ID') + " / bln";
+        }
+
+        // Render Gallery & Testimonials
+        function renderGallery() {
+            const container = document.getElementById('galleryContainer');
+            container.innerHTML = '';
+            galleryImages.forEach(img => {
+                const el = document.createElement('img');
+                el.src = img;
+                el.className = "rounded-2xl h-44 w-full object-cover shadow hover:scale-105 transition-all cursor-pointer border border-slate-200 dark:border-slate-800";
+                container.appendChild(el);
+            });
+            renderAdminGalleryList();
+        }
+
+        function renderTestimonials() {
+            const container = document.getElementById('testimonialContainer');
+            container.innerHTML = '';
+            testimonials.forEach(t => {
+                const card = document.createElement('div');
+                card.className = "p-6 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-amber-200/50 dark:border-slate-700 shadow-sm";
+                card.innerHTML = `
+                    <div class="flex text-amber-500 mb-2 space-x-1">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 italic">"${t.quote}"</p>
+                    <div class="mt-4 font-bold text-brand-green dark:text-emerald-400 text-xs">- ${t.name}</div>
+                `;
+                container.appendChild(card);
+            });
+            renderAdminTestiList();
+            lucide.createIcons();
+        }
+
+        // Convert File to Base64
+        const fileToBase64 = file => new Promise((resolve, reject) => {
+            if (!file) resolve(null);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i><span>Memproses & Upload Berkas...</span>`;
+            lucide.createIcons();
+
+            try {
+                const fileKtp = await fileToBase64(document.getElementById('fileKtp').files[0]);
+                const fileKk = await fileToBase64(document.getElementById('fileKk').files[0]);
+                const fileNpwp = await fileToBase64(document.getElementById('fileNpwp').files[0]);
+                const fileSlip = await fileToBase64(document.getElementById('fileSlip').files[0]);
+                const fileRekening = await fileToBase64(document.getElementById('fileRekening').files[0]);
+                const fileSkKerja = await fileToBase64(document.getElementById('fileSkKerja').files[0]);
+                const fileNikah = await fileToBase64(document.getElementById('fileNikah').files[0]);
+                const fileSelfie = await fileToBase64(document.getElementById('fileSelfie').files[0]);
+                const filePendukung = await fileToBase64(document.getElementById('filePendukung').files[0]);
+
+                const formData = {
+                    id: "sub_" + Date.now(),
+                    perumahan: document.getElementById('formPerumahan').value,
+                    lokasi: document.getElementById('formLokasi').value,
+                    blok: document.getElementById('formBlok').value,
+                    unit: document.getElementById('formUnit').value,
+
+                    nama: document.getElementById('formNama').value,
+                    nik: document.getElementById('formNik').value,
+                    statusNikah: document.getElementById('formStatusNikah').value,
+                    tempatLahir: document.getElementById('formTempatLahir').value,
+                    tglLahir: document.getElementById('formTglLahir').value,
+                    hp: document.getElementById('formHp').value,
+                    wa: document.getElementById('formWa').value,
+                    email: document.getElementById('formEmail').value,
+                    alamat: document.getElementById('formAlamat').value,
+                    provinsi: document.getElementById('formProvinsi').value,
+                    kabupaten: document.getElementById('formKabupaten').value,
+                    kecamatan: document.getElementById('formKecamatan').value,
+                    kelurahan: document.getElementById('formKelurahan').value,
+                    kodePos: document.getElementById('formKodePos').value,
+
+                    statusKerja: document.getElementById('formStatusKerja').value,
+                    namaPerusahaan: document.getElementById('formNamaPerusahaan').value,
+                    alamatPerusahaan: document.getElementById('formAlamatPerusahaan').value,
+                    lamaKerja: document.getElementById('formLamaKerja').value,
+                    jabatan: document.getElementById('formJabatan').value,
+                    gaji: parseFloat(document.getElementById('formGaji').value) || 0,
+                    penghasilanTambahan: parseFloat(document.getElementById('formPenghasilanTambahan').value) || 0,
+
+                    files: {
+                        ktp: fileKtp,
+                        kk: fileKk,
+                        npwp: fileNpwp,
+                        slip: fileSlip,
+                        rekening: fileRekening,
+                        skKerja: fileSkKerja,
+                        nikah: fileNikah,
+                        selfie: fileSelfie,
+                        pendukung: filePendukung
+                    },
+
+                    status: "Pengajuan Baru",
+                    createdAt: new Date().toISOString()
+                };
+
+                if (window.isFirebaseActive && window.isFirebaseActive()) {
+                    const colRef = window.fbSDK.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'kpr_submissions');
+                    await window.fbSDK.addDoc(colRef, formData);
+                } else {
+                    submissionsData.unshift(formData);
+                    localStorage.setItem("agensi_kpr_submissions", JSON.stringify(submissionsData));
+                    renderAdminTable(submissionsData);
+                }
+
+                showToast("Pengajuan KPR Berhasil Terkirim!");
+                document.getElementById('kprForm').reset();
+
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal mengunggah pengajuan. Pastikan file max 10MB.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="send" class="w-5 h-5"></i><span>AJUKAN SEKARANG</span>`;
+                lucide.createIcons();
+            }
+        }
+
+        // Firestore Listener with fallback
+        function listenSubmissions() {
+            if (window.isFirebaseActive && window.isFirebaseActive()) {
+                const colRef = window.fbSDK.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'kpr_submissions');
+                window.fbSDK.onSnapshot(colRef, (snapshot) => {
+                    submissionsData = [];
+                    snapshot.forEach(doc => {
+                        submissionsData.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderAdminTable(submissionsData);
+                }, err => {
+                    console.warn("Firestore snapshot listener failed, using local storage:", err);
+                    renderAdminTable(submissionsData);
+                });
+            } else {
+                renderAdminTable(submissionsData);
+            }
+        }
+
+        // Render Admin Table
+        function renderAdminTable(data) {
+            const tbody = document.getElementById('adminTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            let total = data.length;
+            let process = 0;
+            let acc = 0;
+            let reject = 0;
+
+            data.forEach(item => {
+                if (item.status === 'Pengajuan Baru' || item.status === 'Diproses') process++;
+                if (item.status === 'ACC') acc++;
+                if (item.status === 'Ditolak') reject++;
+
+                let badgeColor = 'bg-amber-100 text-amber-800';
+                if (item.status === 'ACC') badgeColor = 'bg-emerald-100 text-emerald-800';
+                if (item.status === 'Ditolak') badgeColor = 'bg-red-100 text-red-800';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-brand-green dark:text-emerald-400">${item.nama || '-'}</td>
+                    <td class="p-3 text-slate-500">${item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</td>
+                    <td class="p-3">${item.perumahan || '-'}</td>
+                    <td class="p-3">${item.lokasi || '-'}</td>
+                    <td class="p-3">${item.blok || '-'} / ${item.unit || '-'}</td>
+                    <td class="p-3"><span class="px-2 py-1 rounded-full font-bold text-[10px] ${badgeColor}">${item.status}</span></td>
+                    <td class="p-3 text-center space-x-1 whitespace-nowrap">
+                        <button onclick="viewDetail('${item.id}')" class="p-1.5 bg-emerald-100 text-brand-green rounded-lg hover:bg-emerald-200" title="Detail"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="printSubmissionPdf('${item.id}')" class="p-1.5 bg-blue-100 text-brand-blue rounded-lg hover:bg-blue-200" title="Cetak PDF"><i data-lucide="printer" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="updateStatusPrompt('${item.id}')" class="p-1.5 bg-amber-100 text-brand-gold rounded-lg hover:bg-amber-200" title="Status"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="deleteSubmission('${item.id}')" class="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statProcess').innerText = process;
+            document.getElementById('statAcc').innerText = acc;
+            document.getElementById('statReject').innerText = reject;
+
+            lucide.createIcons();
+        }
+
+        function filterAdminData() {
+            const query = document.getElementById('adminSearch').value.toLowerCase();
+            const status = document.getElementById('adminFilterStatus').value;
+            const house = document.getElementById('adminFilterPerumahan').value;
+
+            const filtered = submissionsData.filter(item => {
+                const matchName = (item.nama || '').toLowerCase().includes(query);
+                const matchStatus = status ? item.status === status : true;
+                const matchHouse = house ? item.perumahan === house : true;
+                return matchName && matchStatus && matchHouse;
+            });
+
+            renderAdminTable(filtered);
+        }
+
+        // View Details Modal
+        function viewDetail(id) {
+            const item = submissionsData.find(s => s.id === id);
+            if (!item) return;
+
+            const content = document.getElementById('detailContent');
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-brand-green dark:text-emerald-400 border-b pb-1 mb-2">Informasi Pemohon</h4>
+                        <p><strong>Nama:</strong> ${item.nama}</p>
+                        <p><strong>NIK:</strong> ${item.nik}</p>
+                        <p><strong>Status Nikah:</strong> ${item.statusNikah}</p>
+                        <p><strong>TTL:</strong> ${item.tempatLahir}, ${item.tglLahir}</p>
+                        <p><strong>Kontak:</strong> ${item.hp} / WA: ${item.wa}</p>
+                        <p><strong>Email:</strong> ${item.email}</p>
+                        <p><strong>Alamat:</strong> ${item.alamat}, ${item.kelurahan}, ${item.kecamatan}, ${item.kabupaten}, ${item.provinsi} - ${item.kodePos}</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-brand-green dark:text-emerald-400 border-b pb-1 mb-2">Pekerjaan & Unit Pilihan</h4>
+                        <p><strong>Perumahan:</strong> ${item.perumahan} (${item.lokasi})</p>
+                        <p><strong>Blok/Unit:</strong> Blok ${item.blok} No. ${item.unit}</p>
+                        <p><strong>Pekerjaan:</strong> ${item.statusKerja} - ${item.namaPerusahaan}</p>
+                        <p><strong>Jabatan:</strong> ${item.jabatan} (Lama: ${item.lamaKerja})</p>
+                        <p><strong>Gaji Utama:</strong> Rp ${(item.gaji || 0).toLocaleString('id-ID')}</p>
+                        <p><strong>Gaji Tambahan:</strong> Rp ${(item.penghasilanTambahan || 0).toLocaleString('id-ID')}</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <h4 class="font-bold text-brand-green dark:text-emerald-400 border-b pb-1 mb-3">Berkas Dokumen Lampiran</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        ${renderDocPreview(item.files?.ktp, 'KTP')}
+                        ${renderDocPreview(item.files?.kk, 'KK')}
+                        ${renderDocPreview(item.files?.npwp, 'NPWP')}
+                        ${renderDocPreview(item.files?.slip, 'Slip Gaji')}
+                        ${renderDocPreview(item.files?.rekening, 'Rekening Koran')}
+                        ${renderDocPreview(item.files?.skKerja, 'SK Kerja')}
+                        ${renderDocPreview(item.files?.nikah, 'Buku Nikah')}
+                        ${renderDocPreview(item.files?.selfie, 'Selfie')}
+                    </div>
+                </div>
+            `;
+
+            toggleDetailModal();
+            lucide.createIcons();
+        }
+
+        function renderDocPreview(fileData, label) {
+            if (!fileData) return `<div class="p-2 border rounded text-center text-slate-400 font-medium">${label}: Tidak ada</div>`;
+            const isPdf = fileData.startsWith('data:application/pdf');
+            if (isPdf) {
+                return `
+                    <div class="p-2 border rounded text-center bg-white dark:bg-slate-900 shadow-sm">
+                        <span class="block font-bold text-slate-700 dark:text-slate-200 mb-1">${label}</span>
+                        <a href="${fileData}" download="${label}.pdf" class="inline-flex items-center text-brand-blue font-bold hover:underline text-[11px]">
+                            <i data-lucide="file-text" class="w-4 h-4 mr-1"></i> Download PDF
+                        </a>
+                    </div>
+                `;
+            }
+            return `
+                <div class="p-2 border rounded bg-white dark:bg-slate-900 shadow-sm">
+                    <span class="block font-bold text-slate-700 dark:text-slate-200 mb-1">${label}</span>
+                    <a href="${fileData}" target="_blank">
+                        <img src="${fileData}" class="h-24 w-full object-cover rounded border hover:opacity-80">
+                    </a>
+                </div>
+            `;
+        }
+
+        // Print PDF View
+        function printSubmissionPdf(id) {
+            const item = submissionsData.find(s => s.id === id);
+            if (!item) return;
+
+            const printWin = window.open('', '_blank');
+            printWin.document.write(`
+                <html>
+                <head>
+                    <title>Pengajuan KPR - ${item.nama}</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 20px; color: #333; }
+                        h1 { color: #064E3B; border-bottom: 2px solid #D97706; padding-bottom: 5px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                        td, th { padding: 8px; border: 1px solid #ddd; font-size: 12px; }
+                        th { background: #064E3B; color: #fff; text-align: left; }
+                    </style>
+                </head>
+                <body>
+                    <h1>AGENSI PROPERTY - LEMBAR PENGAJUAN KPR</h1>
+                    <p><strong>Tanggal:</strong> ${new Date(item.createdAt).toLocaleString('id-ID')}</p>
+                    <p><strong>Status:</strong> ${item.status}</p>
+                    
+                    <table>
+                        <tr><th colspan="2">1. DATA PEMOHON</th></tr>
+                        <tr><td>Nama Lengkap</td><td>${item.nama}</td></tr>
+                        <tr><td>NIK</td><td>${item.nik}</td></tr>
+                        <tr><td>TTL / Status</td><td>${item.tempatLahir}, ${item.tglLahir} (${item.statusNikah})</td></tr>
+                        <tr><td>No HP / WA</td><td>${item.hp} / ${item.wa}</td></tr>
+                        <tr><td>Email</td><td>${item.email}</td></tr>
+                        <tr><td>Alamat Lengkap</td><td>${item.alamat}, ${item.kelurahan}, ${item.kecamatan}, ${item.kabupaten}, ${item.provinsi} ${item.kodePos}</td></tr>
+                        
+                        <tr><th colspan="2">2. DATA PEKERJAAN</th></tr>
+                        <tr><td>Status Pekerjaan</td><td>${item.statusKerja}</td></tr>
+                        <tr><td>Perusahaan</td><td>${item.namaPerusahaan}</td></tr>
+                        <tr><td>Jabatan / Lama Kerja</td><td>${item.jabatan} / ${item.lamaKerja}</td></tr>
+                        <tr><td>Penghasilan</td><td>Rp ${(item.gaji||0).toLocaleString('id-ID')}</td></tr>
+
+                        <tr><th colspan="2">3. UNIT PENGAJUAN</th></tr>
+                        <tr><td>Perumahan</td><td>${item.perumahan} (${item.lokasi})</td></tr>
+                        <tr><td>Blok / Unit</td><td>Blok ${item.blok} No. ${item.unit}</td></tr>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWin.document.close();
+            printWin.print();
+        }
+
+        async function updateStatusPrompt(id) {
+            const statusOptions = ["Pengajuan Baru", "Diproses", "ACC", "Ditolak"];
+            const choice = prompt(`Ubah Status Pengajuan (Ketik salah satu):\n- Pengajuan Baru\n- Diproses\n- ACC\n- Ditolak`);
+            if (!choice || !statusOptions.includes(choice)) return;
+
+            try {
+                if (window.isFirebaseActive && window.isFirebaseActive()) {
+                    const docRef = window.fbSDK.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'kpr_submissions', id);
+                    await window.fbSDK.updateDoc(docRef, { status: choice });
+                } else {
+                    const item = submissionsData.find(s => s.id === id);
+                    if (item) item.status = choice;
+                    localStorage.setItem("agensi_kpr_submissions", JSON.stringify(submissionsData));
+                    renderAdminTable(submissionsData);
+                }
+                showToast("Status berhasil diperbarui!");
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function deleteSubmission(id) {
+            if (!confirm("Hapus data pengajuan ini?")) return;
+            try {
+                if (window.isFirebaseActive && window.isFirebaseActive()) {
+                    const docRef = window.fbSDK.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'kpr_submissions', id);
+                    await window.fbSDK.deleteDoc(docRef);
+                } else {
+                    submissionsData = submissionsData.filter(s => s.id !== id);
+                    localStorage.setItem("agensi_kpr_submissions", JSON.stringify(submissionsData));
+                    renderAdminTable(submissionsData);
+                }
+                showToast("Data pengajuan terhapus!");
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function exportToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,Nama,NIK,Perumahan,Lokasi,Blok,Unit,Status,Tanggal\n";
+            submissionsData.forEach(s => {
+                csvContent += `"${s.nama}","'${s.nik}","${s.perumahan}","${s.lokasi}","${s.blok}","${s.unit}","${s.status}","${s.createdAt}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Pengajuan_KPR_Agensi_Property.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function renderAdminHousingList() {
+            const list = document.getElementById('adminHousingList');
+            if(!list) return;
+            list.innerHTML = '';
+            housingData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-white dark:bg-slate-800 rounded-xl border flex items-center justify-between text-xs";
+                const imgThumb = item.image ? `<img src="${item.image}" class="w-10 h-10 object-cover rounded-lg">` : `<div class="w-10 h-10 green-gradient rounded-lg flex items-center justify-center text-amber-300 font-bold text-[9px] text-center leading-tight">CHAT ADMIN</div>`;
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        ${imgThumb}
+                        <div>
+                            <span class="font-bold block text-slate-800 dark:text-slate-100">${item.title}</span>
+                            <span class="text-slate-400 text-[10px]">${item.price}</span>
+                        </div>
+                    </div>
+                    <button onclick="removeHousingItem(${index})" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                `;
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function addHousingItem() {
+            const title = document.getElementById('newHouseTitle').value;
+            const image = document.getElementById('newHouseImg').value || "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80";
+            const address = document.getElementById('newHouseAddress').value;
+            const price = document.getElementById('newHousePrice').value || "Rp174.000.000";
+            const cicilan = document.getElementById('newHouseCicilan').value || "Rp1.073.000/bulan";
+            const promo = document.getElementById('newHousePromo').value || "DP Rp0,- | Booking 100rb";
+
+            if (!title) return showToast("Judul perumahan wajib diisi!");
+
+            housingData.push({ id: "h" + Date.now(), title, image, address, status: "SHM", price, cicilan, promo });
+            renderHousingGrid();
+            showToast("Perumahan baru berhasil ditambahkan!");
+        }
+
+        function removeHousingItem(index) {
+            housingData.splice(index, 1);
+            renderHousingGrid();
+            showToast("Perumahan telah dihapus!");
+        }
+
+        function renderAdminGalleryList() {
+            const list = document.getElementById('adminGalleryList');
+            if(!list) return;
+            list.innerHTML = '';
+            galleryImages.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = "relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700";
+                div.innerHTML = `
+                    <img src="${img}" class="h-20 w-full object-cover">
+                    <button onclick="removeGalleryImg(${index})" class="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i></button>
+                `;
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function addGalleryImage() {
+            const url = document.getElementById('newGalleryImg').value;
+            if(!url) return;
+            galleryImages.push(url);
+            renderGallery();
+            document.getElementById('newGalleryImg').value = '';
+            showToast("Foto galeri berhasil ditambahkan!");
+        }
+
+        function removeGalleryImg(index) {
+            galleryImages.splice(index, 1);
+            renderGallery();
+            showToast("Foto galeri telah dihapus!");
+        }
+
+        function renderAdminTestiList() {
+            const list = document.getElementById('adminTestiList');
+            if(!list) return;
+            list.innerHTML = '';
+            testimonials.forEach((t, index) => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-white dark:bg-slate-800 rounded-xl border text-xs flex justify-between items-start";
+                div.innerHTML = `
+                    <div>
+                        <span class="font-bold block">${t.name}</span>
+                        <span class="text-slate-500 italic text-[11px]">"${t.quote}"</span>
+                    </div>
+                    <button onclick="removeTestimonial(${index})" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                `;
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function addTestimonialItem() {
+            const name = document.getElementById('newTestiName').value;
+            const quote = document.getElementById('newTestiQuote').value;
+            if (!name || !quote) return;
+            testimonials.push({ name, quote });
+            renderTestimonials();
+            document.getElementById('newTestiName').value = '';
+            document.getElementById('newTestiQuote').value = '';
+            showToast("Testimoni baru berhasil ditambahkan!");
+        }
+
+        function removeTestimonial(index) {
+            testimonials.splice(index, 1);
+            renderTestimonials();
+            showToast("Testimoni telah dihapus!");
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('adminTabSubmissions').classList.add('hidden');
+            document.getElementById('adminTabHousing').classList.add('hidden');
+            document.getElementById('adminTabGallery').classList.add('hidden');
+            document.getElementById('adminTabTestimonials').classList.add('hidden');
+
+            document.getElementById('tabSubmissions').className = "py-3 border-b-2 border-transparent text-slate-500 flex items-center space-x-1";
+            document.getElementById('tabHousing').className = "py-3 border-b-2 border-transparent text-slate-500 flex items-center space-x-1";
+            document.getElementById('tabGallery').className = "py-3 border-b-2 border-transparent text-slate-500 flex items-center space-x-1";
+            document.getElementById('tabTestimonials').className = "py-3 border-b-2 border-transparent text-slate-500 flex items-center space-x-1";
+
+            if (tab === 'submissions') {
+                document.getElementById('adminTabSubmissions').classList.remove('hidden');
+                document.getElementById('tabSubmissions').className = "py-3 border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 font-bold flex items-center space-x-1";
+            } else if (tab === 'housing') {
+                document.getElementById('adminTabHousing').classList.remove('hidden');
+                document.getElementById('tabHousing').className = "py-3 border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 font-bold flex items-center space-x-1";
+            } else if (tab === 'gallery') {
+                document.getElementById('adminTabGallery').classList.remove('hidden');
+                document.getElementById('tabGallery').className = "py-3 border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 font-bold flex items-center space-x-1";
+            } else if (tab === 'testimonials') {
+                document.getElementById('adminTabTestimonials').classList.remove('hidden');
+                document.getElementById('tabTestimonials').className = "py-3 border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 font-bold flex items-center space-x-1";
+            }
+        }
+
+        function toggleAdminModal() {
+            document.getElementById('adminModal').classList.toggle('hidden');
+        }
+
+        function toggleDetailModal() {
+            document.getElementById('detailModal').classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
